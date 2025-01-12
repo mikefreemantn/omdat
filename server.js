@@ -152,11 +152,6 @@ app.get('/api/metrics/:id', requireAuth, async (req, res) => {
             return res.status(404).json({ error: 'Applicant not found' });
         }
 
-        if (!approvedApplicants.includes(applicant['Email'])) {
-            console.error('Applicant not approved:', applicant['Email']);
-            return res.status(403).json({ error: 'Applicant not approved' });
-        }
-
         console.log('Calculating metrics for:', applicant['First Name'], '(Email:', applicant['Email'], ')');
         const [completion, spokesperson, physical] = await Promise.all([
             getMetricScore(applicant, 'completion'),
@@ -214,11 +209,6 @@ app.post('/api/chat', requireAuth, async (req, res) => {
         if (!applicant) {
             console.error(`Applicant not found for ID: ${applicantId}`);
             return res.status(404).json({ error: 'Applicant not found' });
-        }
-
-        if (!approvedApplicants.includes(applicant['Email'])) {
-            console.error(`Applicant not approved: ${applicant['Email']}`);
-            return res.status(403).json({ error: 'Applicant not approved' });
         }
 
         console.log('Creating chat completion for applicant:', applicant['First Name']);
