@@ -1,0 +1,639 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Applicant Details</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://bernii.github.io/gauge.js/dist/gauge.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-primary: #0f172a;
+            --bg-secondary: #1e293b;
+            --accent-primary: #3b82f6;
+            --accent-secondary: #60a5fa;
+            --accent-gradient: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+            --text-primary: #f8fafc;
+            --text-secondary: #94a3b8;
+            --border-color: #334155;
+            --card-bg: #1e293b;
+            --hover-bg: #2d3b54;
+            --success: #22c55e;
+            --warning: #eab308;
+            --danger: #ef4444;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            font-family: 'Space Grotesk', sans-serif;
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+        }
+
+        .container {
+            max-width: 100%;
+            padding: 0;
+            margin: 0;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .header {
+            padding: 1.5rem 2rem;
+            background: var(--bg-secondary);
+            border-bottom: 1px solid var(--border-color);
+            position: relative;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: var(--accent-gradient);
+        }
+
+        .header h1 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin: 0;
+            background: var(--accent-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .back-button {
+            color: var(--text-secondary);
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.875rem;
+            margin-top: 0.5rem;
+            transition: color 0.3s ease;
+        }
+
+        .back-button:hover {
+            color: var(--accent-secondary);
+        }
+
+        .split-layout {
+            display: flex;
+            flex: 1;
+            height: calc(100vh - 80px);
+        }
+
+        .applicant-info {
+            flex: 1;
+            padding: 2rem;
+            overflow-y: auto;
+            background: var(--bg-primary);
+        }
+
+        .chat-section {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            border-left: 1px solid var(--border-color);
+            background: var(--bg-secondary);
+            max-height: calc(100vh - 80px);
+        }
+
+        .chat-container {
+            display: flex;
+            flex-direction: column;
+            padding: 1.5rem;
+            height: calc(100vh - 400px);
+            min-height: 400px;
+        }
+
+        .chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            margin-bottom: 1rem;
+            padding: 1rem;
+            background: var(--bg-primary);
+            border-radius: 0.75rem;
+            border: 1px solid var(--border-color);
+            max-height: 100%;
+        }
+
+        .chat-input {
+            display: flex;
+            gap: 1rem;
+            padding: 1rem;
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 0.75rem;
+        }
+
+        .chat-input input {
+            flex-grow: 1;
+            background: transparent;
+            border: none;
+            outline: none;
+            color: var(--text-primary);
+            font-size: 0.875rem;
+        }
+
+        .chat-input input::placeholder {
+            color: var(--text-secondary);
+        }
+
+        .chat-input button {
+            background: var(--accent-gradient);
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: opacity 0.3s ease;
+        }
+
+        .chat-input button:hover {
+            opacity: 0.9;
+        }
+
+        .detail-section {
+            background: var(--card-bg);
+            padding: 1.5rem;
+            border-radius: 0.75rem;
+            margin-bottom: 1.5rem;
+            border: 1px solid var(--border-color);
+        }
+
+        .detail-section h3 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: var(--text-primary);
+        }
+
+        .metrics-container {
+            padding: 1.5rem;
+            background: var(--card-bg);
+            border-top: 1px solid var(--border-color);
+            position: sticky;
+            bottom: 0;
+            z-index: 10;
+            height: 300px;
+        }
+
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.5rem;
+        }
+
+        .metric-item {
+            text-align: center;
+            background: var(--bg-primary);
+            padding: 1.5rem;
+            border-radius: 0.75rem;
+            border: 1px solid var(--border-color);
+        }
+
+        .metric-title {
+            font-size: 0.875rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .metric-gauge {
+            width: 150px;
+            height: 120px;
+            margin: 0 auto;
+        }
+
+        .metric-score {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-top: 0.5rem;
+            background: var(--accent-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .message {
+            margin-bottom: 1rem;
+            padding: 1rem 1.25rem;
+            border-radius: 1rem;
+            max-width: 85%;
+            position: relative;
+            line-height: 1.5;
+            font-size: 0.95rem;
+            transition: all 0.2s ease;
+            z-index: 1;
+        }
+
+        .user-message {
+            margin-left: auto;
+            margin-right: 1rem;
+            background: var(--accent-gradient);
+            color: white;
+            border-bottom-right-radius: 0.25rem;
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.2);
+            animation: slideInRight 0.3s ease-out;
+        }
+
+        .bot-message {
+            margin-right: auto;
+            margin-left: 1rem;
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-bottom-left-radius: 0.25rem;
+            color: var(--text-primary);
+            animation: slideInLeft 0.3s ease-out;
+        }
+
+        @keyframes slideInRight {
+            from { opacity: 0; transform: translateX(20px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        @keyframes slideInLeft {
+            from { opacity: 0; transform: translateX(-20px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        .message::after {
+            content: attr(data-time);
+            position: absolute;
+            bottom: -1.25rem;
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+        }
+
+        .user-message::after {
+            right: 0.5rem;
+        }
+
+        .bot-message::after {
+            left: 0.5rem;
+        }
+
+        .message:hover {
+            transform: translateY(-1px);
+        }
+
+        .user-message:hover {
+            box-shadow: 0 6px 16px rgba(59, 130, 246, 0.25);
+        }
+
+        .bot-message:hover {
+            border-color: var(--accent-primary);
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--bg-primary);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--border-color);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--accent-primary);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 1200px) {
+            .metrics-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .split-layout {
+                flex-direction: column;
+            }
+            
+            .chat-section {
+                border-left: none;
+                border-top: 1px solid var(--border-color);
+                max-height: none;
+                height: auto;
+            }
+
+            .chat-container {
+                height: 500px;
+                min-height: 400px;
+            }
+
+            .metrics-container {
+                height: auto;
+                position: relative;
+            }
+
+            .metrics-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Applicant Details</h1>
+            <button class="btn btn-secondary back-button" onclick="window.location.href='index.html'">
+                ← Back to All Applicants
+            </button>
+        </div>
+        <div class="split-layout">
+            <div class="applicant-info">
+                <h2 id="applicantName"></h2>
+                <p id="location"></p>
+                <div id="contact"></div>
+                <div class="detail-section">
+                    <h3>About</h3>
+                    <div id="about"></div>
+                </div>
+                <div class="detail-section">
+                    <h3>Why Apply?</h3>
+                    <div id="whyApply"></div>
+                </div>
+                <div class="detail-section">
+                    <h3>Challenges Overcome</h3>
+                    <div id="challenges"></div>
+                </div>
+                <div class="detail-section">
+                    <h3>Sources of Inspiration</h3>
+                    <div id="inspiration"></div>
+                </div>
+                <div class="detail-section">
+                    <h3>Post-Hike Goals</h3>
+                    <div id="goals"></div>
+                </div>
+                <div class="detail-section">
+                    <h3>Additional Information</h3>
+                    <div id="additional"></div>
+                </div>
+            </div>
+            
+            <div class="chat-section">
+                <div class="chat-container">
+                    <h3 id="chatTitle">Chat with Applicant</h3>
+                    <div class="chat-messages" id="chatMessages"></div>
+                    <div class="chat-input">
+                        <input type="text" id="messageInput" class="form-control" placeholder="Ask a question...">
+                        <button onclick="sendMessage()" class="btn btn-primary">Send</button>
+                    </div>
+                </div>
+                <div class="metrics-container">
+                    <h4>Applicant Metrics</h4>
+                    <div class="metrics-grid">
+                        <div class="metric-item">
+                            <div class="metric-title">Likelihood to Complete AT</div>
+                            <canvas class="metric-gauge" id="completionGauge"></canvas>
+                            <div class="metric-score" id="completionScore">-</div>
+                        </div>
+                        <div class="metric-item">
+                            <div class="metric-title">Spokesperson Potential</div>
+                            <canvas class="metric-gauge" id="spokespersonGauge"></canvas>
+                            <div class="metric-score" id="spokespersonScore">-</div>
+                        </div>
+                        <div class="metric-item">
+                            <div class="metric-title">Physical Capability</div>
+                            <canvas class="metric-gauge" id="physicalGauge"></canvas>
+                            <div class="metric-score" id="physicalScore">-</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Check authentication
+        if (!localStorage.getItem('authenticated') || !localStorage.getItem('password')) {
+            window.location.href = 'login.html';
+        }
+
+        let currentApplicantId = null;
+        let currentApplicantName = null;
+        let gauges = {};
+        const urlParams = new URLSearchParams(window.location.search);
+        const id = urlParams.get('id');
+
+        async function loadMetrics(applicantId) {
+            try {
+                console.log('Loading metrics for applicant:', applicantId);
+                const response = await fetch(`http://localhost:8000/api/metrics/${applicantId}`, {
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('password')}`
+                    }
+                });
+                
+                if (response.status === 401) {
+                    localStorage.removeItem('authenticated');
+                    localStorage.removeItem('password');
+                    window.location.href = 'login.html';
+                    return;
+                }
+
+                const metrics = await response.json();
+                console.log('Received metrics:', metrics);
+                
+                // Initialize gauges if not already done
+                if (!gauges.completion) {
+                    console.log('Initializing gauges');
+                    gauges.completion = createGauge('completionGauge');
+                    gauges.spokesperson = createGauge('spokespersonGauge');
+                    gauges.physical = createGauge('physicalGauge');
+                }
+                
+                // Update gauges and scores
+                console.log('Updating completion gauge:', metrics.completion);
+                gauges.completion.maxValue = 100;
+                gauges.completion.setMinValue(0);
+                gauges.completion.animationSpeed = 32;
+                gauges.completion.set(metrics.completion);
+
+                console.log('Updating spokesperson gauge:', metrics.spokesperson);
+                gauges.spokesperson.maxValue = 100;
+                gauges.spokesperson.setMinValue(0);
+                gauges.spokesperson.animationSpeed = 32;
+                gauges.spokesperson.set(metrics.spokesperson);
+
+                console.log('Updating physical gauge:', metrics.physical);
+                gauges.physical.maxValue = 100;
+                gauges.physical.setMinValue(0);
+                gauges.physical.animationSpeed = 32;
+                gauges.physical.set(metrics.physical);
+                
+                document.getElementById('completionScore').textContent = metrics.completion;
+                document.getElementById('spokespersonScore').textContent = metrics.spokesperson;
+                document.getElementById('physicalScore').textContent = metrics.physical;
+            } catch (error) {
+                console.error('Error loading metrics:', error);
+            }
+        }
+
+        function createGauge(elementId) {
+            const opts = {
+                angle: -0.2,
+                lineWidth: 0.2,
+                radiusScale: 0.9,
+                pointer: {
+                    length: 0.6,
+                    strokeWidth: 0.035,
+                    color: '#000000'
+                },
+                limitMax: true,
+                limitMin: true,
+                colorStart: '#6FADCF',
+                colorStop: '#8FC0DA',
+                strokeColor: '#E0E0E0',
+                generateGradient: true,
+                highDpiSupport: true,
+                percentColors: [[0.0, "#ff4d4d"], [0.50, "#ffd700"], [1.0, "#32CD32"]],
+                staticLabels: {
+                    font: "10px sans-serif",
+                    labels: [0, 25, 50, 75, 100],
+                    color: "#000000",
+                    fractionDigits: 0
+                },
+            };
+            
+            return new Gauge(document.getElementById(elementId)).setOptions(opts);
+        }
+
+        function updateChatTitle(firstName) {
+            document.getElementById('chatTitle').textContent = `Chat with ${firstName}`;
+        }
+
+        function formatTime() {
+            const now = new Date();
+            return now.toLocaleTimeString('en-US', { 
+                hour: 'numeric', 
+                minute: '2-digit',
+                hour12: true 
+            });
+        }
+
+        function addMessage(message, isUser) {
+            const messagesDiv = document.getElementById('chatMessages');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${isUser ? 'user-message' : 'bot-message'}`;
+            messageDiv.textContent = message;
+            messageDiv.setAttribute('data-time', formatTime());
+            messagesDiv.appendChild(messageDiv);
+            messagesDiv.scrollTop = messagesDiv.scrollHeight;
+        }
+
+        async function sendMessage() {
+            const input = document.getElementById('messageInput');
+            const message = input.value.trim();
+            
+            if (!message) return;
+            
+            addMessage(message, true);
+            input.value = '';
+            input.disabled = true;
+            
+            try {
+                const response = await fetch('http://localhost:8000/api/chat', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${localStorage.getItem('password')}`
+                    },
+                    body: JSON.stringify({
+                        applicantId: currentApplicantId,
+                        message: message
+                    })
+                });
+                
+                if (response.status === 401) {
+                    localStorage.removeItem('authenticated');
+                    localStorage.removeItem('password');
+                    window.location.href = 'login.html';
+                    return;
+                }
+
+                const data = await response.json();
+                if (data.error) {
+                    addMessage('Sorry, an error occurred. Please try again.', false);
+                } else {
+                    addMessage(data.response, false);
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                addMessage('Sorry, an error occurred. Please try again.', false);
+            }
+            
+            input.disabled = false;
+            input.focus();
+        }
+
+        async function loadApplicantDetails() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const id = urlParams.get('id');
+            currentApplicantId = id;
+            
+            const response = await fetch('fresh_data.csv');
+            const data = await response.text();
+            
+            const rows = data.split('\n');
+            const headers = rows[0].split('\t');
+            const applicantRow = rows[id].split('\t');
+            
+            const applicant = {};
+            headers.forEach((header, index) => {
+                applicant[header] = applicantRow[index];
+            });
+            
+            // Update chat title with first name
+            updateChatTitle(applicant['First Name']);
+            
+            // Update page content
+            document.getElementById('applicantName').textContent = `${applicant['First Name']} ${applicant['Last Name']}`;
+            document.getElementById('location').textContent = `${applicant['City']}, ${applicant['State']}`;
+            document.getElementById('contact').innerHTML = `
+                <strong>Contact Information:</strong><br>
+                Email: ${applicant['Email']}<br>
+                Phone: ${applicant['Phone']}
+            `;
+            document.getElementById('about').innerHTML = `<p>${applicant['Tell us about yourself.'] || 'Not provided'}</p>`;
+            document.getElementById('whyApply').innerHTML = `<p>${applicant['What drew you to apply for this scholarship?'] || 'Not provided'}</p>`;
+            document.getElementById('challenges').innerHTML = `<p>${applicant['What is a challenge or obstacle that you have faced, or are currently facing, and how might time on the trail help you to better meet this challenge?'] || 'Not provided'}</p>`;
+            document.getElementById('inspiration').innerHTML = `<p>${applicant['Where do you find inspiration when faced with challenges and obstacles? When has your courage surprised you?'] || 'Not provided'}</p>`;
+            document.getElementById('goals').innerHTML = `<p>${applicant['At the end of your hike (whether or not you complete the entire 2,190 miles), what do you wish for yourself?'] || 'Not provided'}</p>`;
+            document.getElementById('additional').innerHTML = `<p>${applicant['Is there anything else you would like to share or that we should consider as we are making our decision?'] || 'Not provided'}</p>`;
+
+            // Load metrics after applicant details are loaded
+            await loadMetrics(id);
+        }
+
+        // Add event listener for Enter key
+        document.getElementById('messageInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                sendMessage();
+            }
+        });
+
+        // Load details when page loads
+        window.onload = loadApplicantDetails;
+    </script>
+</body>
+</html>
