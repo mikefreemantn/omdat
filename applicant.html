@@ -438,7 +438,7 @@
         async function loadMetrics(applicantId) {
             try {
                 console.log('Loading metrics for applicant:', applicantId);
-                const response = await fetch(`http://localhost:8000/api/metrics/${applicantId}`, {
+                const response = await fetch(`/api/metrics/${applicantId}`, {
                     headers: {
                         'Authorization': `Bearer ${localStorage.getItem('password')}`
                     }

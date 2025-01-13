@@ -113,24 +113,14 @@ app.post('/api/login', (req, res) => {
     }
 });
 
-// Get all applicants, both approved and additional
+// Get all applicants
 app.get('/api/applicants', requireAuth, (req, res) => {
     try {
         const applicants = loadApplicantsData();
-        // Split into approved and additional applicants
-        const approvedApplicantsList = applicants.filter(applicant => 
-            approvedApplicants.includes(applicant['Email'])
-        );
-        const additionalApplicantsList = applicants.filter(applicant => 
-            !approvedApplicants.includes(applicant['Email'])
-        );
-        
-        console.log('Sending applicants data - Approved:', approvedApplicantsList.length, 
-                  'Additional:', additionalApplicantsList.length);
-        
+        console.log('Sending applicants data - Total:', applicants.length);
         res.json({
-            approved: approvedApplicantsList,
-            additional: additionalApplicantsList
+            approved: [],
+            additional: applicants
         });
     } catch (error) {
         console.error('Error getting applicants:', error);
