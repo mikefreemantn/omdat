@@ -260,7 +260,7 @@
 
         async function loadApplicants() {
             try {
-                const response = await fetch('http://localhost:8000/api/applicants', {
+                const response = await fetch('/api/applicants', {
                     headers: {
                         'Authorization': `Bearer ${localStorage.getItem('password')}`
                     }
